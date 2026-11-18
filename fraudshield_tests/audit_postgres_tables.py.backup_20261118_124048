@@ -1,0 +1,211 @@
+﻿from getpass import getpass
+from pathlib import Path
+from datetime import datetime, timezone
+import json
+
+from sqlalchemy import create_engine, inspect, text
+from sqlalchemy.engine import URL
+
+from app import database, models
+
+print("\nFRAUDSHIELD AI - POSTGRESQL PRE-MIGRATION AUDIT")
+
+sqlite_engine = database.engine
+
+if sqlite_engine.dialect.name != "sqlite":
+    raise SystemExit(
+        "Safety stop: Current backend is not using SQLite."
+    )
+
+Base = getattr(database, "Base", None)
+
+if Base is None:
+    Base = getattr(models, "Base", None)
+
+if Base is None:
+    raise SystemExit("SQLAlchemy Base not found.")
+
+expected_tables = set(Base.metadata.tables.keys())
+
+password = getpass("PostgreSQL app password: ")
+
+url = URL.create(
+    "postgresql+psycopg",
+    username="fraudshield_app",
+    password=password,
+    host="127.0.0.1",
+    port=5432,
+    database="fraudshield_db"
+)
+
+del password
+
+pg_engine = create_engine(
+    url,
+    pool_pre_ping=True,
+    connect_args={"connect_timeout": 10}
+)
+
+try:
+    sqlite_inspector = inspect(sqlite_engine)
+    pg_inspector = inspect(pg_engine)
+
+    with pg_engine.connect() as conn:
+        database_name, username = conn.execute(
+            text("SELECT current_database(), current_user")
+        ).one()
+
+    if (
+        database_name != "fraudshield_db"
+        or username != "fraudshield_app"
+    ):
+        raise SystemExit("Wrong PostgreSQL connection.")
+
+    sqlite_tables = set(
+        sqlite_inspector.get_table_names()
+    )
+
+    pg_tables = set(
+        pg_inspector.get_table_names(schema="public")
+    )
+
+    print("\nEXPECTED TABLES:", sorted(expected_tables))
+    print("SQLITE TABLES:", sorted(sqlite_tables))
+    print("POSTGRESQL TABLES:", sorted(pg_tables))
+
+    if not (
+        expected_tables == sqlite_tables == pg_tables
+    ):
+        raise SystemExit(
+            "Safety stop: Table lists do not match."
+        )
+
+    audit = {
+        "database": "fraudshield_db",
+        "generated_utc": datetime.now(
+            timezone.utc
+        ).isoformat(),
+        "tables": {}
+    }
+
+    all_columns_match = True
+    all_pg_empty = True
+
+    with sqlite_engine.connect() as sqlite_conn:
+        with pg_engine.connect() as pg_conn:
+
+            for name in sorted(expected_tables):
+                sqlite_cols = {
+                    c["name"]
+                    for c in sqlite_inspector.get_columns(name)
+                }
+
+                pg_cols = {
+                    c["name"]
+                    for c in pg_inspector.get_columns(
+                        name, schema="public"
+                    )
+                }
+
+                sqlite_pk = set(
+                    sqlite_inspector.get_pk_constraint(
+                        name
+                    ).get("constrained_columns") or []
+                )
+
+                pg_pk = set(
+                    pg_inspector.get_pk_constraint(
+                        name, schema="public"
+                    ).get("constrained_columns") or []
+                )
+
+                sql_sqlite_name = (
+                    sqlite_engine.dialect
+                    .identifier_preparer.quote(name)
+                )
+
+                sql_pg_name = (
+                    pg_engine.dialect
+                    .identifier_preparer.quote(name)
+                )
+
+                sqlite_count = sqlite_conn.execute(
+                    text(
+                        f"SELECT COUNT(*) FROM {sql_sqlite_name}"
+                    )
+                ).scalar_one()
+
+                pg_count = pg_conn.execute(
+                    text(
+                        f"SELECT COUNT(*) FROM {sql_pg_name}"
+                    )
+                ).scalar_one()
+
+                columns_match = sqlite_cols == pg_cols
+                pk_match = sqlite_pk == pg_pk
+
+                if not columns_match or not pk_match:
+                    all_columns_match = False
+
+                if pg_count != 0:
+                    all_pg_empty = False
+
+                print(f"\nTABLE: {name}")
+                print("SQLite Records:", sqlite_count)
+                print("PostgreSQL Records:", pg_count)
+                print("Columns Match:", columns_match)
+                print("Primary Key Match:", pk_match)
+
+                if not columns_match:
+                    print(
+                        "Only SQLite columns:",
+                        sorted(sqlite_cols - pg_cols)
+                    )
+                    print(
+                        "Only PostgreSQL columns:",
+                        sorted(pg_cols - sqlite_cols)
+                    )
+
+                audit["tables"][name] = {
+                    "sqlite_rows": sqlite_count,
+                    "postgresql_rows": pg_count,
+                    "columns_match": columns_match,
+                    "primary_key_match": pk_match
+                }
+
+    audit["columns_and_pk_match"] = all_columns_match
+    audit["postgresql_all_tables_empty"] = all_pg_empty
+
+    print("\nFINAL AUDIT RESULT")
+
+    if not all_columns_match:
+        print("SCHEMA MISMATCH - REVIEW REQUIRED")
+    elif not all_pg_empty:
+        print(
+            "POSTGRESQL CONTAINS DATA - "
+            "REVIEW BEFORE MIGRATION"
+        )
+    else:
+        print(
+            "POSTGRESQL TABLES EMPTY - "
+            "READY FOR FURTHER MIGRATION CHECKS"
+        )
+
+    output_dir = Path("reports") / "phase7"
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    output_file = (
+        output_dir / "postgres_pre_migration_audit.json"
+    )
+
+    output_file.write_text(
+        json.dumps(audit, indent=2),
+        encoding="utf-8"
+    )
+
+    print("\nAudit saved:", output_file)
+    print("DATABASE AUDIT COMPLETED")
+    print("No database records were modified.")
+
+finally:
+    pg_engine.dispose()

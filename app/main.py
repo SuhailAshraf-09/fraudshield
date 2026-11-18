@@ -1,4 +1,5 @@
 """FraudShield AI - FastAPI starter. No live payments, no real fraud model yet."""
+from app.security import reviewer_or_admin
 import json
 from collections import Counter
 from datetime import datetime, timezone, timedelta
@@ -65,7 +66,7 @@ def response_for(prediction: Prediction) -> PredictionResponse:
 
 
 @app.post("/api/v1/predictions", response_model=PredictionResponse, tags=["Predictions"])
-def predict(body: PredictionRequest, db: Session = Depends(get_db), user: User = Depends(current_user)):
+def predict(body: PredictionRequest, db: Session = Depends(get_db), user: User = Depends(reviewer_or_admin)):
     stored = db.get(Transaction, body.transaction_id)
     body_features = body.features.model_dump_json()
     if stored:
@@ -170,3 +171,24 @@ def model_active(user: User = Depends(current_user)):
 def model_metrics(user: User = Depends(current_user)):
     return {"status": "not_evaluated", "precision": None, "recall": None, "pr_auc": None,
             "f1_score": None, "false_positive_rate": None, "reason": "A validated supervised model has not been trained yet"}
+
+# FRAUDSHIELD MAIN ML ROUTER V1
+from app.ml_integrated_router import router as trained_ml_router
+app.include_router(trained_ml_router)
+
+# FRAUDSHIELD BATCH ROUTER - OPENAPI VERIFIED
+from app.ml_batch_router import router as batch_ml_router
+app.include_router(batch_ml_router)
+
+# FRAUDSHIELD PDF REPORT ROUTER V1
+from app.ml_pdf_router import router as fraud_pdf_router
+app.include_router(fraud_pdf_router)
+
+
+# FRAUDSHIELD ML PERSISTENCE ROUTER V1
+from app.ml_persistence_router import router as ml_persistence_router
+
+app.include_router(
+    ml_persistence_router,
+    prefix="/api/v1/ml"
+)

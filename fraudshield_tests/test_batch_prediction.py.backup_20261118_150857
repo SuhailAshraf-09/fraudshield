@@ -1,0 +1,242 @@
+﻿from pathlib import Path
+from getpass import getpass
+import json
+
+import httpx
+import pandas as pd
+New-Item -ItemType Directory ".\fraudshield_tests" -Force | Out-Null
+
+@'
+import os
+from getpass import getpass
+
+import psycopg
+from sqlalchemy import create_engine, text
+from sqlalchemy.engine import URL
+
+print("\nFRAUDSHIELD AI - POSTGRESQL STARTUP DIAGNOSIS")
+
+password = getpass("PostgreSQL app password: ")
+
+settings = {
+    "host": "127.0.0.1",
+    "port": 5432,
+    "user": "fraudshield_app",
+    "dbname": "fraudshield_db",
+    "password": password,
+    "connect_timeout": 10
+}
+
+stage = "1 - Direct Psycopg Connection"
+test_engine = None
+app_engine = None
+
+try:
+    print("\nSTEP 1: Direct PostgreSQL connection")
+
+    with psycopg.connect(**settings) as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(
+                "SELECT current_database(), current_user"
+            )
+            identity = cursor.fetchone()
+
+    if identity != ("fraudshield_db", "fraudshield_app"):
+        raise RuntimeError("Unexpected PostgreSQL identity")
+
+    print("Direct Psycopg: PASS")
+
+    stage = "2 - SQLAlchemy Connection"
+
+    print("\nSTEP 2: SQLAlchemy connection")
+
+    url = URL.create(
+        "postgresql+psycopg",
+        username=settings["user"],
+        password=password,
+        host=settings["host"],
+        port=settings["port"],
+        database=settings["dbname"]
+    )
+
+    test_engine = create_engine(
+        url,
+        pool_pre_ping=True,
+        hide_parameters=True,
+        connect_args={"connect_timeout": 10}
+    )
+
+    with test_engine.connect() as conn:
+        result = conn.execute(
+            text("SELECT current_database(), current_user")
+        ).one()
+
+    if tuple(result) != (
+        "fraudshield_db", "fraudshield_app"
+    ):
+        raise RuntimeError("Unexpected SQLAlchemy identity")
+
+    print("SQLAlchemy: PASS")
+
+    stage = "3 - FraudShield Database Configuration"
+
+    print("\nSTEP 3: FraudShield database configuration")
+
+    os.environ["FRAUDSHIELD_DATABASE_URL"] = (
+        url.render_as_string(hide_password=False)
+    )
+
+    from app.database import engine as app_engine
+
+    print("Selected engine:", app_engine.dialect.name)
+
+    if app_engine.dialect.name != "postgresql":
+        raise RuntimeError("PostgreSQL was not selected")
+
+    with app_engine.connect() as conn:
+        conn.execute(text("SELECT 1")).scalar_one()
+
+    print("FraudShield Database Engine: PASS")
+
+    stage = "4 - FastAPI Application Import"
+
+    print("\nSTEP 4: FastAPI application import")
+
+    from app.main import app
+
+    paths = app.openapi().get("paths", {})
+
+    for route in (
+        "/api/v1/ml/predict",
+        "/api/v1/ml/batch-predict",
+        "/api/v1/ml/report-pdf"
+    ):
+        print(route, ":", route in paths)
+
+    print("FastAPI Import: PASS")
+
+    print("\nALL POSTGRESQL STARTUP CHECKS PASSED")
+
+except Exception as error:
+    print("\nDIAGNOSTIC FAILED")
+    print("Failed Stage:", stage)
+    print("Error Type:", type(error).__name__)
+
+    original = getattr(error, "orig", error)
+    sqlstate = getattr(original, "sqlstate", None)
+
+    print("PostgreSQL SQLSTATE:", sqlstate or "Unavailable")
+
+    if sqlstate == "28P01":
+        print("Reason: PostgreSQL password rejected.")
+    elif sqlstate == "3D000":
+        print("Reason: Database does not exist.")
+    elif sqlstate == "42501":
+        print("Reason: Database permission denied.")
+    elif sqlstate in ("08001", "08006"):
+        print("Reason: Database connection failed.")
+    else:
+        print("Reason: Further inspection required.")
+
+    print("No passwords or hashes displayed.")
+
+finally:
+    if test_engine is not None:
+        test_engine.dispose()
+
+    if app_engine is not None:
+        app_engine.dispose()
+'@ | Set-Content ".\fraudshield_tests\diagnose_pg_startup.py" -Encoding UTF8
+
+ROOT = Path(__file__).resolve().parent.parent
+DATA = ROOT / "data" / "processed" / "test.csv"
+REPORT = ROOT / "reports" / "phase5" / "batch_test.json"
+
+BASE = "http://127.0.0.1:8000/api/v1"
+
+FEATURES = ["Time", "Amount"] + [
+    f"V{i}" for i in range(1, 29)
+]
+
+df = pd.read_csv(DATA, nrows=3)
+
+csv_bytes = df[FEATURES].to_csv(index=False).encode("utf-8")
+
+email = input("Admin email: ")
+password = getpass("Admin password: ")
+
+with httpx.Client(timeout=60) as client:
+    login = client.post(
+        BASE + "/auth/login",
+        json={"email": email, "password": password}
+    )
+
+    del password
+
+    if login.status_code != 200:
+        raise SystemExit(f"Login failed: {login.status_code}")
+
+    token = login.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    # Request without authorization
+    unauthorized = client.post(
+        BASE + "/ml/batch-predict",
+        files={"file": ("sample.csv", csv_bytes, "text/csv")}
+    )
+
+    # Authenticated CSV batch prediction
+    prediction = client.post(
+        BASE + "/ml/batch-predict",
+        headers=headers,
+        files={"file": ("sample.csv", csv_bytes, "text/csv")}
+    )
+
+    # Invalid CSV schema
+    invalid_bytes = df[FEATURES].drop(
+        columns=["Amount"]
+    ).to_csv(index=False).encode("utf-8")
+
+    invalid = client.post(
+        BASE + "/ml/batch-predict",
+        headers=headers,
+        files={"file": ("invalid.csv", invalid_bytes, "text/csv")}
+    )
+
+results = {
+    "login_status": login.status_code,
+    "unauthorized_status": unauthorized.status_code,
+    "batch_prediction_status": prediction.status_code,
+    "invalid_schema_status": invalid.status_code
+}
+
+if prediction.status_code == 200:
+    data = prediction.json()
+    results["total_transactions"] = data["total_transactions"]
+    results["flagged_transactions"] = data["flagged_transactions"]
+    results["model_version"] = data["model_version"]
+else:
+    print("Prediction error:", prediction.text[:500])
+
+results["checks_passed"] = (
+    login.status_code == 200
+    and unauthorized.status_code == 401
+    and prediction.status_code == 200
+    and invalid.status_code == 422
+    and results.get("total_transactions") == 3
+)
+
+REPORT.parent.mkdir(parents=True, exist_ok=True)
+REPORT.write_text(json.dumps(results, indent=2), encoding="utf-8")
+
+print("\nFRAUDSHIELD AI - BATCH PREDICTION TEST")
+
+for key, value in results.items():
+    print(f"{key}: {value}")
+
+print("\nReport saved:", REPORT)
+
+if not results["checks_passed"]:
+    raise SystemExit("Batch integration testing failed.")
+
+print("Batch prediction testing successful!")

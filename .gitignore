@@ -8,3 +8,17 @@ __pycache__/
 *.log
 models/*.pkl
 models/*.joblib
+.ml_api_key
+data/raw/
+data/processed/
+reports/
+.venv/
+__pycache__/
+*.pyc
+.env
+.env.*
+!.env.example
+.ml_api_key
+*.sqlite3
+*.db
+*.log
