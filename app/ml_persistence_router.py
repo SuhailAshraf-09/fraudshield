@@ -158,6 +158,7 @@ def predict_and_save(
 
     prediction_values = {
         "id": str(uuid4()),
+        "model_version": MODEL_VERSION,
         "risk_index": model_score * 100,
         "risk_tier": tier,
         "requires_review": flagged,
