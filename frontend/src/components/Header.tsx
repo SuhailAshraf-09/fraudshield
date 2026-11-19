@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { UserPublic } from '../types/api';
 
 interface HeaderProps {
@@ -16,11 +16,43 @@ export const Header: React.FC<HeaderProps> = ({
   onGoToDashboard,
   onLogout,
 }) => {
+  const [activeSection, setActiveSection] = useState('home');
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+
+      const sections = ['home', 'features', 'solutions', 'technology', 'use-cases', 'about', 'contact'];
+      const scrollPos = window.scrollY + 120;
+
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(id);
+    }
+  };
+
   return (
-    <header className="landing-navbar">
+    <header className={`landing-navbar fixed-header ${scrolled ? 'navbar-scrolled' : ''}`}>
       <div className="navbar-container">
         {/* Brand Logo */}
-        <a href="#home" className="brand-logo-group">
+        <a href="#home" onClick={(e) => scrollTo(e, 'home')} className="brand-logo-group">
           <div className="logo-shield-wrapper">
             <svg className="shield-icon" viewBox="0 0 44 48" fill="none">
               <path
@@ -59,15 +91,57 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </a>
 
-        {/* Navigation Links */}
+        {/* Navigation Links with Active Scrollspy Highlighting */}
         <nav className="nav-links">
-          <a href="#home" className="nav-link active">Home</a>
-          <a href="#features" className="nav-link">Features</a>
-          <a href="#solutions" className="nav-link">Solutions</a>
-          <a href="#technology" className="nav-link">Technology</a>
-          <a href="#use-cases" className="nav-link">Use Cases</a>
-          <a href="#about" className="nav-link">About</a>
-          <a href="#contact" className="nav-link">Contact</a>
+          <a
+            href="#home"
+            onClick={(e) => scrollTo(e, 'home')}
+            className={`nav-link ${activeSection === 'home' ? 'active' : ''}`}
+          >
+            Home
+          </a>
+          <a
+            href="#features"
+            onClick={(e) => scrollTo(e, 'features')}
+            className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}
+          >
+            Features
+          </a>
+          <a
+            href="#solutions"
+            onClick={(e) => scrollTo(e, 'solutions')}
+            className={`nav-link ${activeSection === 'solutions' ? 'active' : ''}`}
+          >
+            Solutions
+          </a>
+          <a
+            href="#technology"
+            onClick={(e) => scrollTo(e, 'technology')}
+            className={`nav-link ${activeSection === 'technology' ? 'active' : ''}`}
+          >
+            Technology
+          </a>
+          <a
+            href="#use-cases"
+            onClick={(e) => scrollTo(e, 'use-cases')}
+            className={`nav-link ${activeSection === 'use-cases' ? 'active' : ''}`}
+          >
+            Use Cases
+          </a>
+          <a
+            href="#about"
+            onClick={(e) => scrollTo(e, 'about')}
+            className={`nav-link ${activeSection === 'about' ? 'active' : ''}`}
+          >
+            About
+          </a>
+          <a
+            href="#contact"
+            onClick={(e) => scrollTo(e, 'contact')}
+            className={`nav-link ${activeSection === 'contact' ? 'active' : ''}`}
+          >
+            Contact
+          </a>
         </nav>
 
         {/* Action Buttons: Conditioned on Authentication */}
