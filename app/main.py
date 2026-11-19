@@ -1,12 +1,14 @@
 """FraudShield AI - FastAPI starter. No live payments, no real fraud model yet."""
 from app.security import reviewer_or_admin
 import json
+import os
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
@@ -197,3 +199,8 @@ app.include_router(
 from app.ml_metadata_router import router as ml_metadata_router
 
 app.include_router(ml_metadata_router)
+
+# Serve Frontend Web Application
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+if os.path.exists(frontend_dir):
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")

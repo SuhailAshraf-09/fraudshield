@@ -25,3 +25,6 @@ __pycache__/
 
 # Local backup files
 *.backup_*
+node_modules/
+dist/
+.DS_Store
