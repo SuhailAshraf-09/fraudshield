@@ -18,6 +18,7 @@ COPY --chown=10001:10001 app/ ./app/
 
 # Copy trusted trained Random Forest model
 COPY --chown=10001:10001 ml_models/random_forest_v1.joblib ./ml_models/random_forest_v1.joblib
+COPY --chown=10001:10001 ml_models/random_forest_v1_metrics.json ./ml_models/random_forest_v1_metrics.json
 
 USER apiuser
 

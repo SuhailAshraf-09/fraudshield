@@ -192,3 +192,8 @@ app.include_router(
     ml_persistence_router,
     prefix="/api/v1/ml"
 )
+
+# FRAUDSHIELD VERIFIED ML METADATA ROUTER
+from app.ml_metadata_router import router as ml_metadata_router
+
+app.include_router(ml_metadata_router)
