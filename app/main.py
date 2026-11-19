@@ -1,11 +1,13 @@
 """FraudShield AI - FastAPI starter. No live payments, no real fraud model yet."""
 import json
+import os
 from collections import Counter
 from datetime import datetime, timezone, timedelta
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI, HTTPException, Query, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy import func, select, text
 from sqlalchemy.orm import Session
 
@@ -170,3 +172,10 @@ def model_active(user: User = Depends(current_user)):
 def model_metrics(user: User = Depends(current_user)):
     return {"status": "not_evaluated", "precision": None, "recall": None, "pr_auc": None,
             "f1_score": None, "false_positive_rate": None, "reason": "A validated supervised model has not been trained yet"}
+
+
+# Serve Frontend Web Application
+frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+if os.path.exists(frontend_dir):
+    app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="frontend")
+

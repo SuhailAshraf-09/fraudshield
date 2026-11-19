@@ -8,3 +8,7 @@ __pycache__/
 *.log
 models/*.pkl
 models/*.joblib
+node_modules/
+dist/
+.DS_Store
+

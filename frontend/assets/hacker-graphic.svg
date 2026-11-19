@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 400" fill="none">
+  <defs>
+    <radialGradient id="cyberRedGlow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#FF1E40" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#7A0010" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hoodGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#222"/>
+      <stop offset="50%" stop-color="#141416"/>
+      <stop offset="100%" stop-color="#0A0A0C"/>
+    </linearGradient>
+    <filter id="neonRed" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="cardGlow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#FF0033" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Background Ambience -->
+  <circle cx="190" cy="180" r="140" fill="url(#cyberRedGlow)"/>
+
+  <!-- Hooded Figure Silhouette -->
+  <g transform="translate(40, 20)">
+    <!-- Shoulders & Coat -->
+    <path d="M40 260 C60 190, 80 150, 150 150 C220 150, 240 190, 260 260 Z" fill="url(#hoodGrad)"/>
+    <path d="M10 320 C30 260, 60 220, 150 215 C240 220, 270 260, 290 320 Z" fill="#0B0B0E"/>
+
+    <!-- Hood Outline & Depth -->
+    <path d="M85 145 C85 65, 120 40, 150 40 C180 40, 215 65, 215 145 C215 180, 200 205, 150 210 C100 205, 85 180, 85 145 Z" 
+          fill="url(#hoodGrad)" stroke="#FF2A4D" stroke-width="1.5" stroke-opacity="0.6"/>
+
+    <!-- Inner Hood Shadow (Black face void) -->
+    <path d="M105 130 C105 85, 128 70, 150 70 C172 70, 195 85, 195 130 C195 170, 180 185, 150 185 C120 185, 105 170, 105 130 Z" fill="#050507"/>
+
+    <!-- Glowing Red Slit Eyes -->
+    <ellipse cx="135" cy="125" rx="9" ry="3.5" fill="#FF1744" filter="url(#neonRed)" transform="rotate(-6 135 125)"/>
+    <ellipse cx="165" cy="125" rx="9" ry="3.5" fill="#FF1744" filter="url(#neonRed)" transform="rotate(6 165 125)"/>
+
+    <!-- Laptop Lid Silhouette -->
+    <path d="M80 230 L220 230 L205 295 L95 295 Z" fill="#1C1C22" stroke="#444" stroke-width="1"/>
+    <!-- Laptop screen reflection glow -->
+    <path d="M88 234 L212 234 L198 288 L102 288 Z" fill="#2E080F" stroke="#FF1744" stroke-width="1" opacity="0.8"/>
+    <!-- Laptop keyboard base -->
+    <path d="M50 295 L250 295 L270 320 L30 320 Z" fill="#111116" stroke="#333" stroke-width="1"/>
+    <!-- Glowing Red Triangle Warning on Screen -->
+    <path d="M150 245 L165 272 L135 272 Z" fill="#FF1744" opacity="0.9" filter="url(#neonRed)"/>
+    <text x="150" y="268" fill="#FFF" font-family="sans-serif" font-weight="900" font-size="12" text-anchor="middle">!</text>
+  </g>
+
+  <!-- Risk Assessment Badge Widget (Overlay on Laptop / Right side) -->
+  <g transform="translate(185, 235)" filter="url(#cardGlow)">
+    <!-- Glassmorphic Card Container -->
+    <rect x="0" y="0" width="180" height="90" rx="12" fill="#16080B" fill-opacity="0.9" stroke="#FF2B4C" stroke-width="1.8"/>
+    
+    <!-- Top label with icon -->
+    <g transform="translate(14, 16)">
+      <rect x="0" y="0" width="20" height="20" rx="4" fill="#FF1744" fill-opacity="0.2" stroke="#FF1744" stroke-width="1"/>
+      <path d="M10 4 L16 16 L4 16 Z" fill="#FF3355"/>
+      <text x="28" y="14" fill="#FFA3B0" font-family="'Segoe UI', sans-serif" font-weight="600" font-size="12" letter-spacing="0.5">Fraud Risk</text>
+    </g>
+
+    <!-- Risk Percentage & Bars -->
+    <g transform="translate(14, 46)">
+      <!-- Signal Bar Graphic -->
+      <rect x="0" y="24" width="6" height="8" rx="1.5" fill="#FF1744"/>
+      <rect x="9" y="18" width="6" height="14" rx="1.5" fill="#FF1744"/>
+      <rect x="18" y="10" width="6" height="22" rx="1.5" fill="#FF1744"/>
+      <rect x="27" y="2" width="6" height="30" rx="1.5" fill="#FF1744"/>
+
+      <!-- 98.5% Text -->
+      <text x="42" y="24" fill="#FFFFFF" font-family="'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="22" letter-spacing="-0.5">98.5%</text>
+      <!-- Sub-label -->
+      <text x="42" y="38" fill="#FF4D6D" font-family="'Segoe UI', sans-serif" font-weight="700" font-size="11" letter-spacing="0.5">High Risk</text>
+    </g>
+  </g>
+</svg>

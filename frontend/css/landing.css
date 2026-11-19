@@ -1,0 +1,647 @@
+/* ==========================================================================
+   FraudShield AI - Landing Page & Hero Section Styles
+   Matches the glowing Gold & Crimson Cyber aesthetic in the mockup
+   ========================================================================== */
+
+/* Navbar */
+.landing-navbar {
+  position: relative;
+  z-index: 40;
+  width: 100%;
+  padding: 18px 40px;
+  background: rgba(10, 10, 13, 0.7);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Brand Logo */
+.brand-logo-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-shield-wrapper {
+  width: 38px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 10px rgba(245, 166, 35, 0.5));
+}
+
+.shield-icon {
+  width: 100%;
+  height: 100%;
+}
+
+.brand-text-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.gold-accent {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.brand-tagline {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  margin-top: 2px;
+}
+
+/* Nav links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.nav-link {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #cfcfe0;
+  position: relative;
+  padding: 6px 0;
+}
+
+.nav-link:hover, .nav-link.active {
+  color: var(--gold-secondary);
+}
+
+.nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--gold-gradient);
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* Nav Actions */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.signin-btn {
+  padding: 8px 18px;
+  font-size: 0.88rem;
+}
+
+.getstarted-btn {
+  padding: 8px 20px;
+  font-size: 0.88rem;
+}
+
+/* ==========================================================================
+   Hero Section
+   ========================================================================== */
+
+.hero-section {
+  position: relative;
+  min-height: 580px;
+  padding: 40px 40px 60px;
+  max-width: 1440px;
+  margin: 0 auto;
+  overflow: visible;
+  display: flex;
+  align-items: center;
+}
+
+.hero-glow-sphere {
+  position: absolute;
+  top: 10%;
+  right: 15%;
+  width: 480px;
+  height: 480px;
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.15) 0%, rgba(255, 23, 68, 0.08) 45%, transparent 70%);
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero-cyber-wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(245, 166, 35, 0.4), rgba(255, 23, 68, 0.5), transparent);
+}
+
+.hero-grid-container {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 40px;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 5;
+}
+
+/* Left Hero Content */
+.hero-left-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--border-radius-pill);
+  background: rgba(245, 166, 35, 0.08);
+  border: 1px solid rgba(245, 166, 35, 0.35);
+  box-shadow: 0 0 15px rgba(245, 166, 35, 0.15);
+  width: fit-content;
+  margin-bottom: 20px;
+}
+
+.badge-bolt {
+  font-size: 0.95rem;
+  color: var(--gold-secondary);
+}
+
+.badge-text {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: 0.02em;
+}
+
+.hero-title {
+  font-size: 3.4rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1.05;
+  margin-bottom: 8px;
+  text-shadow: 0 0 35px rgba(255, 255, 255, 0.1);
+}
+
+.gold-text {
+  background: var(--gold-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.hero-subtitle {
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ffe066 0%, #f5a623 60%, #e07a00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-description {
+  font-size: 1.05rem;
+  color: #b5b5c9;
+  line-height: 1.6;
+  max-width: 540px;
+  margin-bottom: 28px;
+}
+
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 36px;
+}
+
+.hero-explore-btn {
+  padding: 12px 28px;
+  font-size: 1rem;
+}
+
+.hero-demo-btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+}
+
+.play-icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 0.7rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* 4 Feature Badges at bottom of hero */
+.hero-metrics-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metric-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.metric-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.metric-icon-box.icon-red {
+  background: rgba(255, 23, 68, 0.12);
+  border: 1px solid rgba(255, 23, 68, 0.3);
+}
+
+.metric-icon-box.icon-gold {
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.3);
+}
+
+.metric-pill-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.metric-val {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.1;
+}
+
+.metric-lbl {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Right Hero Visual Composition
+   ========================================================================== */
+
+.hero-visual-stage {
+  position: relative;
+  height: 440px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Earth Globe Wireframe */
+.globe-bg-network {
+  position: absolute;
+  top: 10px;
+  left: 20px;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  border: 1px solid rgba(245, 166, 35, 0.18);
+  background: radial-gradient(circle, rgba(245, 166, 35, 0.06) 0%, transparent 70%);
+  background-image: 
+    repeating-radial-gradient(circle at 50% 50%, transparent 0, transparent 20px, rgba(245, 166, 35, 0.08) 21px),
+    linear-gradient(rgba(245, 166, 35, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 166, 35, 0.06) 1px, transparent 1px);
+  background-size: 100% 100%, 30px 30px, 30px 30px;
+  box-shadow: 0 0 50px rgba(245, 166, 35, 0.12);
+  z-index: 1;
+}
+
+/* Floating 3D Cards */
+.floating-cards-wrapper {
+  position: absolute;
+  left: -20px;
+  top: 70px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.glass-card {
+  width: 210px;
+  height: 125px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  transition: transform 0.4s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-5px) scale(1.02);
+}
+
+.card-gold {
+  background: linear-gradient(135deg, #242018 0%, #12100c 100%);
+  border: 1.5px solid #d49a24;
+  transform: rotate(-6deg);
+  margin-bottom: -35px;
+  z-index: 1;
+}
+
+.card-red {
+  background: linear-gradient(135deg, #3d0c0c 0%, #160404 100%);
+  border: 1.5px solid #c62828;
+  transform: rotate(2deg) translateX(30px);
+  z-index: 2;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 23, 68, 0.25);
+}
+
+.card-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-chip {
+  width: 26px;
+  height: 18px;
+  background: linear-gradient(135deg, #fce082 0%, #b8860b 100%);
+  border-radius: 4px;
+  border: 1px solid #7a5200;
+}
+
+.card-wifi {
+  font-size: 0.65rem;
+  color: #ffe066;
+  opacity: 0.8;
+}
+
+.card-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: #e5a93c;
+}
+
+.card-red .card-label {
+  color: #ff8a80;
+}
+
+.card-number {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: bold;
+  letter-spacing: 0.12em;
+  color: #ffe885;
+}
+
+.card-red .card-number {
+  color: #ffffff;
+}
+
+.card-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-expiry {
+  font-size: 0.55rem;
+  color: #a08e66;
+  font-family: var(--font-mono);
+}
+
+.card-mc-circles {
+  display: flex;
+  align-items: center;
+}
+
+.circle-red {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ff5252;
+  margin-right: -5px;
+}
+
+.circle-orange {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffb74d;
+}
+
+/* Center Holographic Pedestal */
+.pedestal-shield-center {
+  position: absolute;
+  left: 45%;
+  bottom: 10px;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hologram-shield-float {
+  width: 160px;
+  height: 190px;
+  animation: holoFloat 3.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 25px rgba(245, 166, 35, 0.6));
+}
+
+@keyframes holoFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+.holo-shield-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.pedestal-rings-container {
+  position: relative;
+  width: 220px;
+  height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: -30px;
+}
+
+.ring-disc {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid #ffd166;
+  background: rgba(20, 15, 8, 0.8);
+  box-shadow: 0 0 15px rgba(245, 166, 35, 0.4);
+}
+
+.ring-top {
+  width: 140px;
+  height: 32px;
+  top: 0;
+  border-color: #ffe066;
+  background: radial-gradient(ellipse at center, rgba(255, 224, 102, 0.4) 0%, rgba(30, 20, 8, 0.9) 70%);
+}
+
+.ring-middle {
+  width: 180px;
+  height: 42px;
+  top: 10px;
+  border-color: #f5a623;
+  opacity: 0.85;
+}
+
+.ring-bottom {
+  width: 220px;
+  height: 52px;
+  top: 18px;
+  border-color: #d97706;
+  opacity: 0.6;
+  box-shadow: 0 0 35px rgba(245, 166, 35, 0.6);
+}
+
+/* Hacker Silhouette & Threat Panel (Right) */
+.hacker-threat-panel {
+  position: absolute;
+  right: -10px;
+  bottom: 40px;
+  z-index: 12;
+}
+
+.hacker-avatar-container {
+  position: relative;
+}
+
+.hooded-hacker-head {
+  width: 160px;
+  height: 160px;
+  background: radial-gradient(circle at 50% 60%, #16161f 0%, #0a0a0f 85%);
+  border-radius: 80px 80px 40px 40px;
+  border: 1.5px solid rgba(255, 23, 68, 0.3);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.9), inset 0 0 25px rgba(0, 0, 0, 0.95);
+}
+
+.red-glow-eyes {
+  display: flex;
+  gap: 22px;
+  margin-top: 10px;
+}
+
+.eye-slit {
+  width: 14px;
+  height: 5px;
+  background: #ff1744;
+  border-radius: 4px;
+  box-shadow: 0 0 12px #ff1744, 0 0 20px #ff1744;
+}
+
+.eye-slit.left { transform: rotate(-10deg); }
+.eye-slit.right { transform: rotate(10deg); }
+
+/* Fraud Risk Floating Widget */
+.fraud-risk-floating-widget {
+  position: absolute;
+  bottom: -20px;
+  right: 10px;
+  background: rgba(22, 8, 11, 0.92);
+  border: 1.5px solid #ff2b4c;
+  border-radius: var(--border-radius-md);
+  padding: 10px 14px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8), 0 0 20px var(--red-glow);
+  min-width: 140px;
+  backdrop-filter: blur(10px);
+}
+
+.risk-widget-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.risk-title-lbl {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #ffa3b0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-widget-main {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.risk-signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+}
+
+.risk-signal-bars .bar {
+  width: 4px;
+  background: #331015;
+  border-radius: 1px;
+}
+
+.risk-signal-bars .bar.active {
+  background: #ff1744;
+  box-shadow: 0 0 6px #ff1744;
+}
+
+.bar-1 { height: 6px; }
+.bar-2 { height: 11px; }
+.bar-3 { height: 16px; }
+.bar-4 { height: 22px; }
+
+.risk-percentage-val {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.risk-tag-high {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #ff4d6d;
+  margin-top: 2px;
+}
