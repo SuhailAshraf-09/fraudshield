@@ -89,6 +89,18 @@ export interface ModelActiveInfo {
   feature_schema_hash?: string | null;
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  role?: string;
+  full_name?: string;
+}
+
 export interface UserPublic {
   id: string;
   email: string;

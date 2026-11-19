@@ -1,11 +1,21 @@
 import React from 'react';
+import { UserPublic } from '../types/api';
 
 interface HeaderProps {
+  currentUser: UserPublic | null;
   onSignInClick: () => void;
-  onGetStartedClick: () => void;
+  onRegisterClick: () => void;
+  onGoToDashboard: () => void;
+  onLogout: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onSignInClick, onGetStartedClick }) => {
+export const Header: React.FC<HeaderProps> = ({
+  currentUser,
+  onSignInClick,
+  onRegisterClick,
+  onGoToDashboard,
+  onLogout,
+}) => {
   return (
     <header className="landing-navbar">
       <div className="navbar-container">
@@ -60,21 +70,44 @@ export const Header: React.FC<HeaderProps> = ({ onSignInClick, onGetStartedClick
           <a href="#contact" className="nav-link">Contact</a>
         </nav>
 
-        {/* Action Buttons */}
+        {/* Action Buttons: Conditioned on Authentication */}
         <div className="nav-actions">
-          <button className="btn btn-outline signin-btn" onClick={onSignInClick}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-            Sign In
-          </button>
-          <button className="btn btn-gold getstarted-btn" onClick={onGetStartedClick}>
-            Get Started
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </button>
+          {currentUser ? (
+            /* Logged in state */
+            <div className="nav-auth-user-group">
+              <button className="btn btn-gold gotodashboard-btn" onClick={onGoToDashboard}>
+                <span>Go to Dashboard</span>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+              <div className="user-nav-badge">
+                <span className="user-nav-avatar">👤</span>
+                <span className="user-nav-name">{currentUser.email.split('@')[0]}</span>
+                <span className="user-nav-role">{currentUser.role.toUpperCase()}</span>
+              </div>
+              <button className="btn btn-outline logout-nav-btn" onClick={onLogout} title="Logout">
+                Logout
+              </button>
+            </div>
+          ) : (
+            /* Not logged in state */
+            <>
+              <button className="btn btn-outline signin-btn" onClick={onSignInClick}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                Sign In
+              </button>
+              <button className="btn btn-gold getstarted-btn" onClick={onRegisterClick}>
+                Get Started
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>

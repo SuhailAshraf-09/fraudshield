@@ -177,18 +177,11 @@ a {
   border-color: rgba(245, 166, 35, 0.25);
 }
 
-/* View Mode Switcher Header Pill */
+/* View Mode Switcher Header Pill (Hidden per user request) */
 .view-switcher-bar {
-  position: relative;
-  z-index: 50;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #08080a;
-  padding: 10px 20px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.15);
-  gap: 15px;
+  display: none !important;
 }
+
 
 .view-switcher-pill {
   display: flex;

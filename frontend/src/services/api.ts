@@ -89,6 +89,44 @@ class FraudShieldApiService {
   }
 
   /**
+   * Register request to /api/v1/auth/register
+   */
+  public async register(payload: { email: string; password: string; role?: string; full_name?: string }): Promise<UserPublic> {
+    try {
+      const response = await fetch(`${this.baseUrl}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: payload.email,
+          password: payload.password,
+          role: payload.role || 'analyst',
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Registration failed');
+      }
+
+      return await response.json();
+    } catch (err: any) {
+      if (!this.isConnectedToLiveBackend) {
+        // Standalone simulation mode
+        const demoUser: UserPublic = {
+          id: 'usr_' + Math.random().toString(36).substring(2, 9),
+          email: payload.email,
+          role: (payload.role as any) || 'analyst',
+        };
+        const demoToken = 'demo_jwt_token_' + btoa(payload.email);
+        this.setToken(demoToken);
+        localStorage.setItem('fraudshield_user', JSON.stringify(demoUser));
+        return demoUser;
+      }
+      throw err;
+    }
+  }
+
+  /**
    * Login request to /api/v1/auth/login
    */
   public async login(email: string, password: string): Promise<AuthTokenResponse> {
@@ -106,15 +144,37 @@ class FraudShieldApiService {
 
       const data: AuthTokenResponse = await response.json();
       this.setToken(data.access_token);
+      // Fetch or derive user
+      try {
+        const me = await this.getMe();
+        localStorage.setItem('fraudshield_user', JSON.stringify(me));
+      } catch {
+        localStorage.setItem('fraudshield_user', JSON.stringify({ email, role: 'admin' }));
+      }
       return data;
     } catch (err: any) {
       // If backend is offline, provide friendly demo token
       if (!this.isConnectedToLiveBackend) {
         const demoToken = 'demo_jwt_token_' + btoa(email);
         this.setToken(demoToken);
+        localStorage.setItem('fraudshield_user', JSON.stringify({ email, role: 'admin' }));
         return { access_token: demoToken, token_type: 'bearer' };
       }
       throw err;
+    }
+  }
+
+  public logout(): void {
+    this.setToken(null);
+    localStorage.removeItem('fraudshield_user');
+  }
+
+  public getStoredUser(): UserPublic | null {
+    try {
+      const data = localStorage.getItem('fraudshield_user');
+      return data ? JSON.parse(data) : null;
+    } catch {
+      return null;
     }
   }
 

@@ -8,6 +8,13 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class RegisterRequest(BaseModel):
+    email: str
+    password: str
+    role: str = "analyst"
+
+
+
 class UserPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: str

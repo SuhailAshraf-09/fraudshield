@@ -15,6 +15,7 @@ interface SidebarProps {
   onTabChange: (tab: DashboardTab) => void;
   openAlertsCount: number;
   onLogout: () => void;
+  onViewLandingPage?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -22,6 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onTabChange,
   openAlertsCount,
   onLogout,
+  onViewLandingPage,
 }) => {
   return (
     <aside className="dashboard-sidebar">
@@ -172,8 +174,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <span className="sidebar-label">Settings</span>
         </button>
 
+        {/* View Landing Page */}
+        {onViewLandingPage && (
+          <button className="sidebar-item" onClick={onViewLandingPage} style={{ marginTop: 'auto' }}>
+            <span className="sidebar-icon">🌐</span>
+            <span className="sidebar-label">Public Landing</span>
+          </button>
+        )}
+
         {/* Logout */}
-        <button className="sidebar-item logout-item" onClick={onLogout}>
+        <button className="sidebar-item logout-item" onClick={onLogout} style={{ marginTop: onViewLandingPage ? '6px' : 'auto' }}>
           <span className="sidebar-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />

@@ -15,8 +15,8 @@ from .config import settings
 from .database import Base, engine, get_db
 from .models import Alert, Prediction, Transaction, User
 from .risk import assess, MODEL_VERSION
-from .schemas import AlertUpdate, LoginRequest, PredictionRequest, PredictionResponse, UserPublic
-from .security import current_user, issue_token, reviewer_or_admin, verify_password
+from .schemas import AlertUpdate, LoginRequest, RegisterRequest, PredictionRequest, PredictionResponse, UserPublic
+from .security import current_user, hash_password, issue_token, reviewer_or_admin, verify_password
 
 
 @asynccontextmanager
@@ -52,6 +52,29 @@ def login(body: LoginRequest, db: Session = Depends(get_db)):
     if not user or not verify_password(body.password, user.password_hash):
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid email or password")
     return issue_token(user)
+
+
+@app.post("/api/v1/auth/register", response_model=UserPublic, tags=["Authentication"])
+def register(body: RegisterRequest, db: Session = Depends(get_db)):
+    email = body.email.strip().lower()
+    if not email or "@" not in email:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, "Valid email required")
+    if db.scalar(select(User).where(User.email == email)):
+        raise HTTPException(status.HTTP_409_CONFLICT, "User with this email already exists")
+    try:
+        pw_hash = hash_password(body.password)
+    except ValueError as e:
+        raise HTTPException(status.HTTP_400_BAD_REQUEST, str(e))
+    user = User(
+        email=email,
+        role=body.role if body.role in {"admin", "reviewer", "analyst"} else "analyst",
+        password_hash=pw_hash,
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
+
 
 
 @app.get("/api/v1/auth/me", response_model=UserPublic, tags=["Authentication"])
