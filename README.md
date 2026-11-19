@@ -61,3 +61,115 @@ pytest -q
 ```
 
 See `docs/BACKEND_PLAN.md` for the entire request path, roles, feature contract and planned ML/external integration work.
+
+---
+
+## Backend Development Progress - November 19, 2026
+
+> This section documents the latest backend development.
+> The original starter documentation above is preserved
+> as historical project documentation.
+
+### Technology Stack
+
+- Python and FastAPI
+- PostgreSQL and SQLAlchemy
+- JWT authentication and role-based access control
+- NumPy, Pandas, and Scikit-learn
+- Random Forest fraud detection
+- XGBoost, Logistic Regression, and Isolation Forest experiments
+- Docker Desktop and WSL 2
+- PDF investigation reports using ReportLab
+
+### Implemented Backend Features
+
+- JWT authentication and protected API endpoints
+- Admin and reviewer authorization for prediction operations
+- Random Forest transaction fraud classification
+- CSV batch prediction API
+- PDF fraud investigation report generation
+- PostgreSQL prediction storage
+- High-risk fraud alert generation
+- Dashboard, transaction, and alert APIs
+- Security regression testing
+- Dockerized FastAPI application
+
+### Random Forest Final Test Evaluation
+
+The existing trained model was evaluated on held-out test data.
+
+| Metric | Result |
+|---|---:|
+| Test transactions | 56,746 |
+| Actual fraud cases | 95 |
+| Precision | 88.89% |
+| Recall | 75.79% |
+| F1 Score | 81.82% |
+| Average Precision (PR-AUC summary) | 79.87% |
+| ROC-AUC | 95.61% |
+| True Positives | 72 |
+| False Positives | 9 |
+| True Negatives | 56,642 |
+| False Negatives | 23 |
+
+The selected Random Forest decision threshold was
+approximately 0.310531.
+
+These are development evaluation results, not production
+performance guarantees. The model is not production-certified.
+
+### Security Verification
+
+- Legacy prediction API reviewer/admin RBAC test passed
+- Admin and reviewer authorization checks passed
+- Viewer write access correctly denied
+- JWT security baseline passed
+- Docker API unauthenticated access tests passed (8/8)
+- No unauthorized database writes in these tests
+
+These tests do not replace a complete production security audit.
+
+### Docker Integration
+
+Successfully verified:
+
+- Docker image build
+- Trained Random Forest model loading in Docker
+- FastAPI route registration
+- Container HTTP health endpoint
+- Isolated PostgreSQL 17 container connectivity
+- Required PostgreSQL tables
+- JWT-protected endpoints
+- Temporary test container and network cleanup
+
+Docker image:
+
+`fraudshield-ai-backend:phase10`
+
+Build command:
+
+```powershell
+docker build -t fraudshield-ai-backend:phase10 .
+```
+
+The Docker tests used an isolated PostgreSQL instance.
+The existing compose.yaml has not yet been validated for
+the updated application configuration. Do not use it for
+production deployment without further configuration.
+
+### Project Status
+
+Backend development and major integration tests are complete
+for the current development milestone.
+
+Remaining work includes production hardening, deployment
+configuration review, further regression testing, and
+frontend integration.
+
+### Important Notes
+
+- This is a fraud detection demonstration and development project.
+- Model scores are not calibrated fraud probabilities.
+- High-risk predictions require human review.
+- Local datasets, secrets, database files, and test reports
+  are excluded from GitHub and Docker build contexts.

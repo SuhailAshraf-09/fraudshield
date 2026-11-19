@@ -8,3 +8,11 @@ PyJWT>=2.8,<3
 # Development / testing:
 pytest>=8,<10
 httpx>=0.27,<1
+
+# FraudShield AI - ML and PDF runtime dependencies
+numpy==2.5.5
+pandas==3.1.1
+scikit-learn==1.9.1
+joblib==1.6.0
+reportlab==5.1.0
+python-multipart==0.0.34

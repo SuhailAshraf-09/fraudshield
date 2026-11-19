@@ -1,0 +1,42 @@
+﻿# FraudShield AI - Docker Build Protection
+
+# Virtual environments
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Private configuration
+.env
+.env.*
+.ml_api_key
+*.pem
+*.key
+
+# Local datasets and reports
+data/
+reports/
+
+# Local databases
+*.db
+*.sqlite3
+
+# Development files
+.git/
+.github/
+.vscode/
+fraudshield_tests/
+fraudshield_ml/
+tests/
+docs/
+
+# Backup and temporary files
+*.backup_*
+*.bak
+*.log
+
+# Local documentation
+README.md
